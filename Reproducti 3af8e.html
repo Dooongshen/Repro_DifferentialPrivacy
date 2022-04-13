@@ -1,0 +1,885 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Reproduction of “Deep Learning with Differential Privacy”</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	text-indent: -1.7em;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-opaquegray { background-color: rgba(255, 255, 255, 0.0375); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="3af8e6ab-bb49-4288-a42d-785ec96f2020" class="page serif"><header><img class="page-cover-image" src="https://www.notion.so/images/page-cover/solid_blue.png" style="object-position:center 40%"/><h1 class="page-title">Reproduction of “Deep Learning with Differential Privacy”</h1></header><div class="page-body"><p id="f0ed3335-8c90-4eca-a823-4f96da59ca5c" class=""><em>Report for CS4240 Deep Learning 2021/22</em></p><h1 id="0c6f995d-2f0a-473e-9184-7dfb24326969" class="">Abstract</h1><p id="9486c70c-1ebe-4943-ab1e-21bb542837f1" class="">Benefits of machine learning techniques based on neuron networks are widely appreciated. While these methods require a large amount of data, sensitive information should be retained. Differential privacy is thus developed.</p><p id="a1a57aeb-0530-4ab1-8e66-f36d1804c81a" class="">This blog aims to present and describe our efforts to reproduce “Deep Learning for Differential Privacy”. This is also an assignment for the course CS4240 Deep Learning of 2021/22 at Delft University of Technology.</p><p id="6f3ac8f3-b46b-43c9-a174-7d14c4c37d2b" class="">The<a href="https://arxiv.org/abs/1607.00133"> original paper</a> developed a new method of learning with differential privacy, as well as a new technique for analysis of privacy cost. It’s main components include a Differentially Private Stochastic Gradient Descents (DP-SGD) algorithm that protects the privacy and a moments accountant that measures the privacy protection performance.</p><p id="61c77c98-63eb-41f6-bf25-8f58da2ad1fb" class="">In this blog we attempts to reproduce the work of implementing the DP-SGD algorithm and analyze the performance using existing moments accountant tools. Our implementation showed an approximately 5% lower result in accuracy compared to the original paper and possible reasons are discussed.</p><hr id="14912c64-266e-49b0-b368-cd72dcb10733"/><h1 id="0b567c54-ffe3-45a8-be0f-6afb242e91a7" class="">Introduction</h1><p id="a2d8414b-0080-4a09-ac11-d7ecefa1477c" class="">The original paper we are to reproduce has a few major contributions, we summarize them as new techniques sanitize data and new methods to track privacy loss. There are also a few tricks used in the paper such computing the gradients for individual training example for higher efficiency, subdividing the takes into smaller batches to reduce memory requirements and applying differentially PCA projection (DP-PCA) layer at input. Moreover, a brief introduction on the backgrounds of differential privacy is provided in the following subsections.</p><h2 id="3246eab6-ed6c-4506-90bb-988c2db626df" class="">What Is Differential Privacy?</h2><p id="95656db6-c172-4032-b50b-d640c446227a" class="">The definition of differential privacy is as follows,</p><figure id="eec4743e-9dc1-43fe-bfcc-f2549e8dc150" class="equation"><style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><div class="equation-container"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mtext>⁍</mtext></mrow><annotation encoding="application/x-tex">⁍</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0em;vertical-align:0em;"></span><span class="mord">⁍</span></span></span></span></span></div></figure><p id="405320d6-c54a-44b2-8074-99d840d12c1c" class="">However, beyond the complex equations, a simple example could explain the theory of differential privacy more directly.</p><h3 id="d5f5ed5b-d4a5-4870-bf1d-f1b5b69e44e5" class="">An Example on Differential Privacy</h3><p id="fa62a446-bbca-49a2-9c30-6244f015f84c" class="">Suppose we have the medical record dataset of a group of patients but cannot be accessed. Only we know that the probability of this group of patients having cancer is 0.55, which is estimated by a deep learning model.</p><p id="9f78c7ec-aefd-4992-a994-a9f96cfbbc44" class=""><code>Dataset  —&gt;   model  —&gt;  probability of cancer: 0.55</code></p><p id="2d70cde7-b14c-43c7-b0ac-95f1a3a63d02" class="">Now, knowing that another patient’s medical record is added into the dataset, the result of the model comes to 0.57</p><p id="9bd353e9-04f5-48f4-b0d7-de4d11559044" class=""><code>Dataset + tom   —&gt;   model  —&gt;   probability of cancer: 0.57</code></p><p id="24ff2593-0ae6-4668-a399-a2bc384dea22" class="">It is possible that the increase in the result may be due to Tom having cancer, then the privacy of the model is leaked. But also may caused by the accuracy improvement, as one more data point is available. So, we define the loss privacy with the index: log(0.57/0.55)=0.0357</p><p id="fa6199e0-10a5-499f-8607-b043be6b4b4b" class="">However, if the result of the model comes to 0.80, the probability of Tom having cancer is significantly higher. The steep increase of the probability with Tom data point added, means the loss of privacy increased steeply. With the same calculation, the index of privacy cost is log(0.80/0.55)=0.375</p><p id="1b4ae468-625f-43ae-b130-b9c6885035b7" class=""><code>Dataset  —&gt;   model  —&gt;  probability of cancer: 0.55</code></p><p id="3a5d6a41-65da-429e-883f-562f53182836" class=""><code>Dataset + tom  —&gt;   model  —&gt;  probability of cancer: 0.57 privacy cost:log(0.57/0.55)=0.0357</code></p><p id="7f0de2e3-3cc1-42f3-9cf5-e41bcf03e6c7" class=""><code>Dataset + tom  —&gt;   model  —&gt;  probability of cancer: 0.80 privacy cost:log(0.57/0.55)=0.375</code></p><p id="aa8a56d8-601a-4485-ae9e-78b26c1d6ac2" class="">So, the privacy cost increased 10 times.</p><p id="1a0ba16e-8754-4b57-8192-60324771ba7f" class="">To limit the leak of privacy that the deep learning model caused,  <strong>Differential privacy </strong>should be implemented to limit the privacy cost for individuals. The model should make similar predict result, whether Tom’s data point is added into the dataset or not.</p><p id="70c5a864-8ebd-4c05-b395-19f1e6d40843" class="">We define the original dataset D and the new dataset with one more data point as D’. So, the equation above is the simplified privacy cost definition. In addition, <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϵ</mi></mrow><annotation encoding="application/x-tex">\epsilon</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">ϵ</span></span></span></span></span><span>﻿</span></span> is defined as the privacy budget.</p><figure id="873b4789-e813-4c68-8675-76867ee59e23" class="equation"><style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><div class="equation-container"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>l</mi><mi>o</mi><mi>g</mi><mfrac><mrow><mi mathvariant="double-struck">P</mi><mo stretchy="false">(</mo><mi mathvariant="script">M</mi><mo stretchy="false">(</mo><mi>D</mi><mo stretchy="false">)</mo><mo>∈</mo><mi>S</mi><mo stretchy="false">)</mo></mrow><mrow><mi mathvariant="double-struck">P</mi><mo stretchy="false">(</mo><mi mathvariant="script">M</mi><mo stretchy="false">(</mo><msup><mi>D</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo stretchy="false">)</mo><mo>∈</mo><mi>S</mi><mo stretchy="false">)</mo></mrow></mfrac><mo>≤</mo><mi>ϵ</mi></mrow><annotation encoding="application/x-tex">log\frac{\mathbb{P}(\mathcal{M}(D)\in S)}{\mathbb{P}(\mathcal{M}(D&#x27;)\in S)}\leq \epsilon</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:2.363em;vertical-align:-0.936em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathbb">P</span><span class="mopen">(</span><span class="mord mathcal">M</span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6778919999999999em;"><span style="top:-2.9890000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mclose">)</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathbb">P</span><span class="mopen">(</span><span class="mord mathcal">M</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mclose">)</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.936em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">≤</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">ϵ</span></span></span></span></span></div></figure><p id="cda4e6d1-40dd-4f2d-b072-3905f99b0da8" class="">A small <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϵ</mi></mrow><annotation encoding="application/x-tex">\epsilon</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">ϵ</span></span></span></span></span><span>﻿</span></span>  means that the privacy will ensure more privacy, but also the model could learn less. A larger <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϵ</mi></mrow><annotation encoding="application/x-tex">\epsilon</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">ϵ</span></span></span></span></span><span>﻿</span></span> means that the privacy will leak more, but also the model could learn more.</p><p id="22822913-109b-44a3-b3a9-ac5bcb2c8bff" class="">Thus,   is one of the parameters that should be tuned to make a tradeoff between learning effect and privacy cost.</p><p id="5e71cc0c-62ba-4dd5-bbd2-87cfd9c4b514" class="">Now, we can understand more about the original equation on DP. If the model M could guarantee every data point have their privacy protected, we call the model M follows <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϵ</mi></mrow><annotation encoding="application/x-tex">\epsilon</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">ϵ</span></span></span></span></span><span>﻿</span></span> - differential privacy, which is a very strong limitation.</p><figure id="10baa85f-94fe-4fbc-88e3-0f48d18ce9c2" class="equation"><style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><div class="equation-container"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mtext>⁍</mtext></mrow><annotation encoding="application/x-tex">⁍</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0em;vertical-align:0em;"></span><span class="mord">⁍</span></span></span></span></span></div></figure><p id="112ed8f4-d6ae-41c0-ab92-cfed5199caf3" class="">So, additional <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>δ</mi></mrow><annotation encoding="application/x-tex">\delta</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.03785em;">δ</span></span></span></span></span><span>﻿</span></span> parameter  refers to the <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϵ</mi></mrow><annotation encoding="application/x-tex">\epsilon</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">ϵ</span></span></span></span></span><span>﻿</span></span> - differential privacy is broken with probability <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>δ</mi></mrow><annotation encoding="application/x-tex">\delta</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.03785em;">δ</span></span></span></span></span><span>﻿</span></span>.</p><h3 id="5cdcccc9-3dce-4d28-a8ba-836253dae435" class="">How To Achieve Differential Privacy</h3><p id="f17dc8b4-52c9-4484-9fb0-910cc82eeb4d" class="">A common way is to add Gaussian noise which can be described as:</p><figure id="08811c87-463c-46fd-bd88-ced154a357eb" class="equation"><style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><div class="equation-container"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi mathvariant="script">M</mi><mo stretchy="false">(</mo><mi>d</mi><mo stretchy="false">)</mo><mo>:</mo><mo>=</mo><mi>f</mi><mo stretchy="false">(</mo><mi>d</mi><mo stretchy="false">)</mo><mo>+</mo><mi mathvariant="script">N</mi><mo stretchy="false">(</mo><mn>0</mn><mo separator="true">,</mo><msubsup><mi>s</mi><mi>f</mi><mn>2</mn></msubsup><mo>⋅</mo><msup><mi>σ</mi><mn>2</mn></msup><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\mathcal{M}(d):=f(d)+\mathcal{N}(0,s^2_f \cdot \sigma^2 )</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathcal">M</span><span class="mopen">(</span><span class="mord mathnormal">d</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mopen">(</span><span class="mord mathnormal">d</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.2472159999999999em;vertical-align:-0.383108em;"></span><span class="mord mathcal" style="margin-right:0.14736em;">N</span><span class="mopen">(</span><span class="mord">0</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.864108em;"><span style="top:-2.4530000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.10764em;">f</span></span></span><span style="top:-3.1130000000000004em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.383108em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.1141079999999999em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">σ</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8641079999999999em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span></span></div></figure><p id="8f1361e6-69fa-4242-a0c8-73740376bac1" class="">The basic blueprint for designing a differentially private additive-noise mechanism include:</p><ul id="d040adab-8f6a-4f0a-9c65-46ab79ae6e66" class="bulleted-list"><li style="list-style-type:disc">approximating the functionality by a sequential composition of bounded-sensitivity functions;</li></ul><ul id="2cdc7a6b-94de-4064-aed8-e1e05d6fc715" class="bulleted-list"><li style="list-style-type:disc">choosing parameters of additive noise;</li></ul><ul id="9d6750d4-5d44-4394-b1a3-77e754b5e5dd" class="bulleted-list"><li style="list-style-type:disc">performing privacy analysis of the resulting mechanism.</li></ul><p id="4b3205c9-b311-4e83-8d49-ca90c4460baa" class="">This marks the end of introduction of differential privacy concept. Following section aims to provide a more detailed implementation description of our work.</p><hr id="b34f7e9e-baea-418c-8230-c3793327d048"/><h1 id="22e9216a-4031-466e-a959-0d2045228914" class="">Reproduction Procedures</h1><p id="47f2562f-49d6-4356-b10e-f7a099e57309" class="">The goal of reproduction is to obtain results as shown in figure3 from the<a href="https://arxiv.org/pdf/1607.00133.pdf"> original paper</a>. We aim to achieve the same accuracy with corresponding noise level using a reproduced differential privacy neuron network.  Google colab platform with PyTorch is used for implementation.</p><p id="24edc6bb-8556-45ae-a447-1d1653280e60" class="">The idea of reproducing the differential privacy deep neural network is, first to build a vanilla fully-connected neural network, train and test it on the MNIST datasets, then, gradually implement preprocessing PCA layer, gradient-clipping and noise-adding in DP-SGD algorithm. As our main concern is to reproduce a DP neural network, we use the existing privacy accountant from <a href="https://github.com/ChrisWaites/pyvacy"><code>pyvacy.analysis.moments_accountant</code></a> to count the privacy loss. In the following part of this section, we will discuss these procedures in detail.</p><h2 id="ddc58f23-7344-40ae-b804-80e6ae41fb83" class=""><strong>PCA Layer and Basic Neuron Network</strong></h2><p id="0175143a-5d59-4631-9f3f-cea099938bd6" class="">Differential privacy neuron network is built on the basis of an ordinary neuron network. Using the given parameters from the paper and basic PyTorch commands. Setting input channel as 60, hidden units as 1000 and output channel as 10, the basic neuron network is built. In addition, ReLU is used as an activation function and SoftMax is stacked to the output.</p><p id="54f91721-9ce8-4cb7-bb7b-3bc55660a4ce" class="">As discussed in the literature, a PCA layer is added in the front of the basic MNIST classifier. The PCA layer should take (N, 28, 28) picture data as input and squash them to (N, 60) and feed to the MNIST classifier. We implemented this layer using existing PCA function from <code><em>sklearn</em></code><em> </em>package. The overall structure of this part of implementation is shown as follows. </p><figure id="bed6529a-cf06-4d70-a334-befb346e7145" class="image"><a href="https://lh5.googleusercontent.com/S086p_VQjexSVvSEQOVPUp1it5BDnyVbFubAyE-rnmZ-ltq3hOuUOohiPKh614076ihEMGN9pnuhUkekBNzn5Omf8ZXpacseMioy7QE_FC7b0RMbkImPdw0YqYfm7sRbEn22zVPH"><img style="width:624px" src="https://lh5.googleusercontent.com/S086p_VQjexSVvSEQOVPUp1it5BDnyVbFubAyE-rnmZ-ltq3hOuUOohiPKh614076ihEMGN9pnuhUkekBNzn5Omf8ZXpacseMioy7QE_FC7b0RMbkImPdw0YqYfm7sRbEn22zVPH"/></a></figure><p id="37c0daf8-b7a3-4cc7-9c3c-cc0dbb8cd3a9" class="">Using MNIST data to train this NN we obtained the following results. It can be seen that the accuracy is 97.9%, lower than the result given in the paper as 98.3%, this may be because of the difference between TensorFlow and PyTorch, or just the randomness in the training data. The<mark class="highlight-teal_background"> corresponding code of  basic MNIST classifier </mark>can be found <a href="Reproducti%203af8e/Code%20Snipp%20b50ce.html">here</a>.</p><figure id="d801a388-4b2a-484c-baaf-de6c61b1e6c0" class="image"><a href="https://lh4.googleusercontent.com/tij2um61Rb_meZ421rks812R1z1gxUXPLvkvekx_7h1Q-pxc_jC4Kpf2IpDnTH7izEj9_trnWfbUlwqRp4IdBsaH09LT47pIP-jjEwXeT8DjqvWwFCOlgOWEkTXNJBWfC_BfWjIO"><img style="width:624px" src="https://lh4.googleusercontent.com/tij2um61Rb_meZ421rks812R1z1gxUXPLvkvekx_7h1Q-pxc_jC4Kpf2IpDnTH7izEj9_trnWfbUlwqRp4IdBsaH09LT47pIP-jjEwXeT8DjqvWwFCOlgOWEkTXNJBWfC_BfWjIO"/></a></figure><h2 id="4e65953b-e531-4dfe-9d79-20d07242904a" class=""><strong>Differential Privacy SGD Algorithm</strong></h2><p id="0dd8fe6a-8d64-42dc-8ea4-a12f32352523" class="">After building the basic framework, we now proceed to implement the differential privacy stochastic descent (DP-SGD) algorithm. As described by the paper, main features of the DP-SGD algorithm includes gradient-clipping step and a noise-adding step. It seems easy to implement these two steps while how to modify the packed SGD optimizer might be a problem. </p><p id="7351210f-3ee4-4b77-b69a-dc3a471e5595" class="">Before implementing the optimizer, we need to select data. Regarding this, “lot” is introduced as a higher class to batch. In a “lot”, data examples are selected randomly. This selection process is accomplished by the function <code>lot_loader</code> of class <code>IIDBatchSampler</code>. After this, the common batch loader plays on the “lot” data instead of original data. The<mark class="highlight-teal_background"> corresponding code of IIDBatchSampler</mark> can be found <a href="Reproducti%203af8e/Code%20Snipp%2031300.html">here</a>.</p><p id="f1cbde2a-c7b6-4ae5-aba4-3f767667ea30" class="">Normally SGD optimizer is well packed in PyTorch, it’s hard to find a way to modify the intermediate process of updating the parameters. Therefore, using help from <a href="https://github.com/fritz-max/replicating-1607.00133">this </a>GitHub repository, we set up a new DP-SGD class which inherits from <code>torch.optim.SGD</code>. In this class we subtract parameters from <code>optim.param_groups</code> and then add our desired steps. The<mark class="highlight-teal_background"> corresponding code of DP-SGD</mark> can be found <a href="Reproducti%203af8e/Code%20Snipp%2031300.html">here</a>.</p><p id="ba1e75cb-1ee5-43f9-82fd-440a6522d1dc" class="">The DP-SGD algorithm is then implemented as follows, firstly two initialization functions <code>zero_batch_grad</code>and <code>zero_batch_grad</code> are used to clear out the value of gradient and accumulated gradient.</p><p id="f04e3697-2d10-4bfd-9e1c-1a06793572ac" class="">Secondly, we are to clip the gradient with regard to each batch in the “lot”. In the function <code>batch_step</code>, the sum of 2-norm of the gradients are calculated. The coefficient of the norm-clipping is decided using this summed norm as:</p><figure id="37e6758c-7b3c-43af-9b03-8075b0c649a7" class="equation"><style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><div class="equation-container"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>C</mi><mo>←</mo><mrow><mi mathvariant="bold">m</mi><mi mathvariant="bold">i</mi><mi mathvariant="bold">n</mi></mrow><mo stretchy="false">(</mo><mfrac><msub><mi>C</mi><mrow><mi>p</mi><mi>a</mi><mi>r</mi><mi>a</mi></mrow></msub><mrow><msub><mi mathvariant="normal">Σ</mi><mrow><mi>n</mi><mi>o</mi><mi>r</mi><mi>m</mi></mrow></msub><mo>+</mo><mn>1</mn><mi>e</mi><mo>−</mo><mn>6</mn></mrow></mfrac><mo separator="true">,</mo><mn>1</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">C\leftarrow \mathbf{min}(\frac{C_{para}}{\Sigma_{norm}+1e-6},1)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">←</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:2.19633em;vertical-align:-0.8360000000000001em;"></span><span class="mord"><span class="mord mathbf">min</span></span><span class="mopen">(</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.36033em;"><span style="top:-2.3139999999999996em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord">Σ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mord mathnormal mtight" style="margin-right:0.02778em;">or</span><span class="mord mathnormal mtight">m</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord">1</span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord">6</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.15139200000000003em;"><span style="top:-2.5500000000000003em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">p</span><span class="mord mathnormal mtight">a</span><span class="mord mathnormal mtight" style="margin-right:0.02778em;">r</span><span class="mord mathnormal mtight">a</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.8360000000000001em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">1</span><span class="mclose">)</span></span></span></span></span></div></figure><p id="8b7eb518-df1d-4a70-bb4a-5bc8de0d7155" class="">where <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>C</mi><mrow><mi>p</mi><mi>a</mi><mi>r</mi><mi>a</mi></mrow></msub></mrow><annotation encoding="application/x-tex">C_{para} </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.15139200000000003em;"><span style="top:-2.5500000000000003em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">p</span><span class="mord mathnormal mtight">a</span><span class="mord mathnormal mtight" style="margin-right:0.02778em;">r</span><span class="mord mathnormal mtight">a</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span></span><span>﻿</span></span> is the parameter we choose to do the clipping, it is set as 4 as in the literature. Obtained this coefficient, we are able to implement the gradient-clipping step as:</p><figure id="a840e519-1396-4bf6-92cf-a7e9bbb577f7" class="equation"><style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><div class="equation-container"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mover accent="true"><msub><mi>g</mi><mi>t</mi></msub><mo>ˉ</mo></mover><mo stretchy="false">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo stretchy="false">)</mo><mo>←</mo><mfrac><mrow><msub><mi>g</mi><mi>t</mi></msub><mo stretchy="false">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo stretchy="false">)</mo></mrow><mrow><mrow><mi mathvariant="bold">m</mi><mi mathvariant="bold">a</mi><mi mathvariant="bold">x</mi></mrow><mo stretchy="false">(</mo><mn>1</mn><mo separator="true">,</mo><mfrac><mrow><mi mathvariant="normal">∣</mi><mi mathvariant="normal">∣</mi><msub><mi>g</mi><mi>t</mi></msub><mo stretchy="false">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo stretchy="false">)</mo><mi mathvariant="normal">∣</mi><msub><mi mathvariant="normal">∣</mi><mn>2</mn></msub></mrow><mi>C</mi></mfrac><mo stretchy="false">)</mo></mrow></mfrac></mrow><annotation encoding="application/x-tex">\bar{g_t}(x_i)\leftarrow \frac{g_t(x_i)}{\mathbf{max}(1,\frac{||g_t(x_i)||_2}{C})}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.56778em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.25em;"><span class="mord">ˉ</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em;"><span></span></span></span></span></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">←</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:2.672em;vertical-align:-1.245em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.1099999999999994em;"><span class="pstrut" style="height:3.01em;"></span><span class="mord"><span class="mord"><span class="mord mathbf">max</span></span><span class="mopen">(</span><span class="mord">1</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.01em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.07153em;">C</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.485em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">∣∣</span><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03588em;">g</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.29634285714285713em;"><span style="top:-2.357em;margin-left:-0.03588em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span><span class="mopen mtight">(</span><span class="mord mtight"><span class="mord mathnormal mtight">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3280857142857143em;"><span style="top:-2.357em;margin-left:0em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span><span class="mclose mtight">)</span><span class="mord mtight">∣</span><span class="mord mtight"><span class="mord mtight">∣</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31731428571428577em;"><span style="top:-2.357em;margin-left:0em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose">)</span></span></span><span style="top:-3.2399999999999998em;"><span class="pstrut" style="height:3.01em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.687em;"><span class="pstrut" style="height:3.01em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.245em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></div></figure><p id="db9caf3f-bf06-4724-a5f8-0c5377bb602d" class="">
+</p><p id="423e658f-f74a-4b72-af2b-073801fa563b" class="">Finally, in the function <code>step</code>, we are to add noise to the gradient with regard to each “lot”. The desired noise would be gaussian with zero mean and variance <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>σ</mi><mn>2</mn></msup><msubsup><mi>C</mi><mrow><mi>p</mi><mi>a</mi><mi>r</mi><mi>a</mi></mrow><mn>2</mn></msubsup></mrow><annotation encoding="application/x-tex">\sigma^2C_{para}^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.197216em;vertical-align:-0.383108em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">σ</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-2.4530000000000003em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">p</span><span class="mord mathnormal mtight">a</span><span class="mord mathnormal mtight" style="margin-right:0.02778em;">r</span><span class="mord mathnormal mtight">a</span></span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.383108em;"><span></span></span></span></span></span></span></span></span></span></span><span>﻿</span></span>. This noise is first added to the gradient of the whole lot, then the average of the “polluted” gradient is calculated and regarded as the sanitized gradient and used to update parameters, the same as in the previous section:</p><figure id="771da2c7-06fb-4ec6-bc95-c33d101cfc74" class="equation"><style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><div class="equation-container"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mtext>⁍</mtext></mrow><annotation encoding="application/x-tex">⁍</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0em;vertical-align:0em;"></span><span class="mord">⁍</span></span></span></span></span></div></figure><p id="029ecfa6-a4a9-4741-b362-3145b4d7cdb6" class="">We hence conclude the description of the reproduction procedure part. In the following part, training process and testing results are presented.</p><figure id="313008e2-bebb-4cfe-ac5d-a2952f6471d8" class="link-to-page"><a href="Reproducti%203af8e/Code%20Snipp%2031300.html">Code Snippet for DP-SGD</a></figure><figure id="b50ce346-8eb9-4663-9dc4-089bbfc3dbf3" class="link-to-page"><a href="Reproducti%203af8e/Code%20Snipp%20b50ce.html">Code Snippet for MNIST Classifier</a></figure><figure id="01fb7e2e-39ac-457d-8068-62650c308139" class="link-to-page"><a href="Reproducti%203af8e/Code%20Snipp%2001fb7.html">Code Snippet for IIDBatchSampler</a></figure><hr id="988c197f-b8cc-4628-b55c-749a506818e0"/><h1 id="93c16abb-fe1b-4b17-be99-e18110f644e5" class="">Training, Results and Analysis</h1><p id="4e0d254e-14ec-4c4e-987b-c1d95ca8b05a" class="">In this reproduction session, three experiment is done, they are:<div class="indented"><p id="b5f0e95e-ee68-4838-9533-5d29880c2009" class="">Experiment 1: Gradient clipping on MNIST classifier,</p><p id="72922d77-2c98-4178-8b85-45d827d8fa89" class="">Experiment 2: Noise adding on MNIST classifier based on gradient clipping=4,</p><p id="6902b87d-0a50-43f3-a2d3-40f68b531ae0" class="">Experiment 3: Adding decaying learning rate.</p></div></p><p id="2765c9fd-8355-4b1b-b647-165424a7b499" class="">Again, the goal of the reproduction is to obtain similar figures as figure3 in the original differential privacy paper, and the reproduction results are as follows.</p><h2 id="cee3b956-e5d8-4103-8c81-5b84e9a17fb0" class=""><strong>Experiment 1: Adding Gradient Clipping</strong></h2><h3 id="2d9270b2-108b-4449-9ad6-a3fada7254fc" class="">Results</h3><p id="9cd4299d-9bf5-4ab7-b58c-7b246ff378b2" class="">First, we added the gradient clipping module on the original MNIST classifier without other changes, to see how the accuracy changes with different gradient clipping. The setting of the hyper parameters is the same as the paper indicated as follows:</p><pre id="e67e6c03-1379-4e42-ba64-ecd3da6118a9" class="code"><code>Lot Size: 600;
+Batch Size: 1; 
+Loss function: Cross Entropy; 
+Learning Rate: 0.052; 
+Iterations: 5000 (50 epochs)</code></pre><p id="4c7b0724-7ed1-4cc1-ab58-7deb7bdff0d6" class="">Following table and images illustrate the final result on accuracy, with different gradient clipping parameters.</p><p id="683b2415-87d8-44f4-9123-10be2fc33376" class=""><em>Table: Accuracy of model with different gradient clipping</em></p><table id="9be56348-6e26-4230-b2c4-61d6a17dc001" class="simple-table"><thead class="simple-table-header"><tr id="0e131e81-bec1-4c32-87ea-2a2e24f06d17"><th id="ao_n" class="simple-table-header-color simple-table-header">
+  Grad_Clip
+  </th><th id="BsE=" class="simple-table-header-color simple-table-header">
+  1
+  </th><th id="`V_K" class="simple-table-header-color simple-table-header">
+  2
+  </th><th id="ezdt" class="simple-table-header-color simple-table-header">
+  4
+  </th><th id="&gt;@KZ" class="simple-table-header-color simple-table-header">
+  NaN
+  </th></tr></thead><tbody><tr id="f57b9e36-2735-477e-9d8d-ac5358b71c71"><th id="ao_n" class="simple-table-header-color simple-table-header">
+  epoch 48
+  </th><td id="BsE=" class="">
+  100% / 98.01%
+  </td><td id="`V_K" class="">
+  99.97% / 98.22%
+  </td><td id="ezdt" class="">
+  99.95% / 97.94%
+  </td><td id="&gt;@KZ" class="">
+  99.59% / 97.82%
+  </td></tr><tr id="9a209673-1e5d-49f9-9935-849cfa51df9f"><th id="ao_n" class="simple-table-header-color simple-table-header">
+  epoch 49
+  </th><td id="BsE=" class="">
+  100% / 98.02%
+  </td><td id="`V_K" class="">
+  99.93% / 97.94%
+  </td><td id="ezdt" class="">
+  99.92% / 97.94%
+  </td><td id="&gt;@KZ" class="">
+  99.56% / 97.82%
+  </td></tr><tr id="646fa113-d070-42a5-8937-63eef11271a1"><th id="ao_n" class="simple-table-header-color simple-table-header">
+  epoch 50
+  </th><td id="BsE=" class="">
+  100% / 98.02%
+  </td><td id="`V_K" class="">
+  99.98% / 98.28%
+  </td><td id="ezdt" class="">
+  99.96% / 98.10%
+  </td><td id="&gt;@KZ" class="">
+  99.62% / 97.91%
+  </td></tr></tbody></table><div id="feecd1bb-492d-41ab-b1ae-d534ccb5d37f" class="column-list"><div id="995630ab-0cef-4366-b34d-e1835a125264" style="width:50%" class="column"><figure id="47873b20-d43e-4943-b895-8dba01133bba" class="image"><a href="Reproducti%203af8e/Untitled.png"><img style="width:285px" src="Reproducti%203af8e/Untitled.png"/></a><figcaption>Grad_clip = 1</figcaption></figure></div><div id="86a2e01a-3466-461a-ba09-60adb4022549" style="width:50%" class="column"><figure id="b8bc80fa-b203-4d55-ad56-cdcb6b5da227" class="image"><a href="Reproducti%203af8e/Untitled%201.png"><img style="width:285px" src="Reproducti%203af8e/Untitled%201.png"/></a><figcaption>Grad_clip =2</figcaption></figure></div></div><div id="eaae1be7-ad51-48b1-8268-3980b4bcab74" class="column-list"><div id="137aa403-9e62-4a7f-8b28-d1abb742c101" style="width:50%" class="column"><figure id="4d4ed78d-40e5-4361-8732-0f5f313a7923" class="image"><a href="Reproducti%203af8e/Untitled%202.png"><img style="width:285px" src="Reproducti%203af8e/Untitled%202.png"/></a><figcaption>Grad_clip = 4</figcaption></figure></div><div id="064215c2-5add-46d9-b2b1-344c06dbdd52" style="width:50%" class="column"><figure id="87f344e7-be61-4aa5-9472-26f08cb792f1" class="image"><a href="Reproducti%203af8e/Untitled%203.png"><img style="width:285px" src="Reproducti%203af8e/Untitled%203.png"/></a><figcaption>No Grad_clip </figcaption></figure></div></div><h3 id="081a4763-2cdf-4855-af1f-c3f86286a503" class="">Analysis</h3><p id="fe33268c-19d0-4d7b-91fd-382f625b11b2" class="">As is shown in above, gradient clipping increased both training accuracy and test accuracy. The smaller the magnitude of the clipping, the higher the accuracy.  As mentioned in the paper, gradient clipping is a popular method for ordinary SGD algorithms. It can happen in the form of norm-clipping or value-clipping and contribute to the prevention of exploding/vanishing gradient. Here only gradient clipping is used, in the further research, effects of magnitude of gradient norm as well as value-clipping method could be investigated. It’s worth mentioning that the whole topic of gradient-clipping is centered on bounding the gradient and a good explanation can be found <a href="https://neptune.ai/blog/understanding-gradient-clipping-and-how-it-can-fix-exploding-gradients-problem">here</a>.</p><p id="6f2970b4-e8c0-47c8-bffa-9343cb5ab738" class="">It can be also observed that overfitting exists on all scenarios as training accuracy is always higher than test accuracy. There is no trend for converging for the first 50 epochs and little correlation to the magnitude of gradient norm. However, in the objective figure from paper, testing accuracy is lower than training accuracy. We decided to first implement the DP settings further then come back to this topic.</p><h2 id="89b44147-90cf-4458-a1dc-57ba93262d14" class="">Experiment 2: Adding Noise</h2><h3 id="5a68ac3d-2e48-4bc8-a2d4-6a25733fb9a6" class="">Results</h3><p id="2d4a01d8-e3ca-484f-a9df-5780fdf6c1cb" class="">Using the same parameter as Experiment 1, fixing gradient clipping to norm to 4 as in the paper and adding noise to the SGD algorithm, we obtained the following results.</p><p id="3d57bf20-35a0-4778-b9da-d1d318f8d53d" class=""><em>Table: Accuracy of model with different noise added (grad_clip=4)</em></p><table id="fb69f839-7d60-44cd-b483-6cdb07777b26" class="simple-table"><thead class="simple-table-header"><tr id="e62983ee-63d4-4e2d-9fcf-efb2cc10fa47"><th id="tBKY" class="simple-table-header-color simple-table-header">
+  Noise_mul
+  </th><th id=";c~T" class="simple-table-header-color simple-table-header">
+  8
+  </th><th id="K^&lt;T" class="simple-table-header-color simple-table-header">
+  4
+  </th><th id="&gt;joY" class="simple-table-header-color simple-table-header">
+  2
+  </th><th id="Q]rs" class="simple-table-header-color simple-table-header">
+  NaN
+  </th></tr></thead><tbody><tr id="722a2e1f-aa77-42ec-a62d-bec8875597f0"><th id="tBKY" class="simple-table-header-color simple-table-header">
+  epoch 98
+  </th><td id=";c~T" class="">
+  85.43% / 85.76%
+  </td><td id="K^&lt;T" class="">
+  89.14% / 88.99%
+  </td><td id="&gt;joY" class="">
+  92.23% / 91.43%
+  </td><td id="Q]rs" class="">
+  99.95% / 97.94%
+  </td></tr><tr id="0f80654b-1ee9-4cb4-a37e-be3e667cb939"><th id="tBKY" class="simple-table-header-color simple-table-header">
+  epoch 99
+  </th><td id=";c~T" class="">
+  85.59% / 86.03%
+  </td><td id="K^&lt;T" class="">
+  89.15% / 89.06%
+  </td><td id="&gt;joY" class="">
+  92.22% / 91.50%
+  </td><td id="Q]rs" class="">
+  99.92% / 97.94%
+  </td></tr><tr id="4b35815c-f9e9-4460-835d-40fdf89f8286"><th id="tBKY" class="simple-table-header-color simple-table-header">
+  epoch 100
+  </th><td id=";c~T" class="">
+  85.48% / 85.83%
+  </td><td id="K^&lt;T" class="">
+  89.10% / 89.00%
+  </td><td id="&gt;joY" class="">
+  92.22% / 91.65%
+  </td><td id="Q]rs" class="">
+  99.96% / 98.10%
+  </td></tr><tr id="84701909-25e4-4718-88ef-e6263f382cb6"><th id="tBKY" class="simple-table-header-color simple-table-header">
+  Achieve DP
+  </th><td id=";c~T" class="">
+  (0.61, 10-5) DP
+  </td><td id="K^&lt;T" class="">
+  (1.26, 10-5) DP
+  </td><td id="&gt;joY" class="">
+  (2.73, 10-5) DP
+  </td><td id="Q]rs" class="">
+  NaN
+  </td></tr></tbody></table><div id="992d8e93-68f7-4f92-85a1-286843eb280d" class="column-list"><div id="8a41d4b3-6dd1-4904-9b25-214ebf12b1b1" style="width:50%" class="column"><figure id="4d15bce2-08f8-46f9-a03b-cc8d7a57c729" class="image"><a href="Reproducti%203af8e/Untitled%204.png"><img style="width:285px" src="Reproducti%203af8e/Untitled%204.png"/></a><figcaption>Noise_mul= 8</figcaption></figure></div><div id="cd9cc69e-1dc4-4da7-9cdf-a24084d74714" style="width:50%" class="column"><figure id="a05b297a-ac45-4469-aea8-9e8442810eb0" class="image"><a href="Reproducti%203af8e/Untitled%205.png"><img style="width:285px" src="Reproducti%203af8e/Untitled%205.png"/></a><figcaption>Noise_mul= 4</figcaption></figure></div></div><div id="4a72cd02-0a4e-49d3-a6a0-6ee18afd2143" class="column-list"><div id="0708e988-b92d-4561-8248-277500fc1c39" style="width:50%" class="column"><figure id="bc54411e-36a9-491d-85a1-5ca055b96788" class="image"><a href="Reproducti%203af8e/Untitled%206.png"><img style="width:280px" src="Reproducti%203af8e/Untitled%206.png"/></a><figcaption>Noise_mul= 2</figcaption></figure></div><div id="b3bd816e-1212-49e7-8334-356036ffa279" style="width:50%" class="column"><figure id="50f43ad3-c6e4-4819-91ab-a4f201cdb011" class="image"><a href="Reproducti%203af8e/Untitled%207.png"><img style="width:285px" src="Reproducti%203af8e/Untitled%207.png"/></a><figcaption>Previous result</figcaption></figure></div></div><p id="f7700596-3f7b-4e99-acb7-856c1fc10edf" class="">Privacy loss is dependent on the added noise. Using <code>moments_accountant</code>from <code><em>pyvacy</em></code>package, we are able to measure the privacy loss. Mind that the axis in the figures is not to scale, results shown in the table are clearer.</p><p id="a2a22819-36d2-418a-a24d-ba75458596d6" class=""><em>Table: Epochs used for achieving DP targets</em></p><table id="b291908c-0150-4006-a899-1e2743247e0b" class="simple-table"><tbody><tr id="32a980d4-d905-420d-a3c4-40e1b85949a2"><th id="@vRR" class="simple-table-header-color simple-table-header" style="width:174.5px">
+  Noise_mu
+  </th><td id="`bSv" class="" style="width:174.5px">
+  8
+  </td><td id="P\c`" class="" style="width:174.5px">
+  4
+  </td><td id="zS:D" class="" style="width:174.5px">
+  2
+  </td></tr><tr id="0b5fc162-c476-4d96-a1a1-a9967fc99c70"><th id="@vRR" class="simple-table-header-color simple-table-header" style="width:174.5px">
+  DP Target
+  </th><td id="`bSv" class="" style="width:174.5px">
+<style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mn>0.5</mn><mo separator="true">,</mo><mn>1</mn><msup><mn>0</mn><mrow><mo>−</mo><mn>5</mn></mrow></msup><mo stretchy="false">)</mo><mi>D</mi><mi>P</mi></mrow><annotation encoding="application/x-tex">(0.5,10^{-5})DP</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">0.5</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">1</span><span class="mord"><span class="mord">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">5</span></span></span></span></span></span></span></span></span><span class="mclose">)</span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mord mathnormal" style="margin-right:0.13889em;">P</span></span></span></span></span><span>﻿</span></span></td><td id="P\c`" class="" style="width:174.5px">
+<style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mn>2</mn><mo separator="true">,</mo><mn>1</mn><msup><mn>0</mn><mrow><mo>−</mo><mn>5</mn></mrow></msup><mo stretchy="false">)</mo><mi>D</mi><mi>P</mi></mrow><annotation encoding="application/x-tex">(2,10^{-5})DP</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">2</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">1</span><span class="mord"><span class="mord">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">5</span></span></span></span></span></span></span></span></span><span class="mclose">)</span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mord mathnormal" style="margin-right:0.13889em;">P</span></span></span></span></span><span>﻿</span></span></td><td id="zS:D" class="" style="width:174.5px">
+  <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.2/katex.min.css')</style><span data-token-index="0" contenteditable="false" class="notion-text-equation-token" style="user-select:all;-webkit-user-select:all;-moz-user-select:all"><span></span><span><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mn>8</mn><mo separator="true">,</mo><mn>1</mn><msup><mn>0</mn><mrow><mo>−</mo><mn>5</mn></mrow></msup><mo stretchy="false">)</mo><mi>D</mi><mi>P</mi></mrow><annotation encoding="application/x-tex">(8,10^{-5})DP</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">8</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">1</span><span class="mord"><span class="mord">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">5</span></span></span></span></span></span></span></span></span><span class="mclose">)</span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mord mathnormal" style="margin-right:0.13889em;">P</span></span></span></span></span><span>﻿</span></span>
+  </td></tr><tr id="2d760abe-2369-4f66-9172-3eea46acfde6"><th id="@vRR" class="simple-table-header-color simple-table-header" style="width:174.5px">
+  Achieving
+  Epochs (paper)
+  </th><td id="`bSv" class="" style="width:174.5px">
+  16
+  </td><td id="P\c`" class="" style="width:174.5px">
+  130
+  </td><td id="zS:D" class="" style="width:174.5px">
+  760
+  </td></tr><tr id="dc0bb1aa-8661-497b-9924-83675df052f3"><th id="@vRR" class="simple-table-header-color simple-table-header" style="width:174.5px">
+  Achieving
+  Epochs (ours)
+  </th><td id="`bSv" class="" style="width:174.5px">
+  70
+  </td><td id="P\c`" class="" style="width:174.5px">
+  250
+  </td><td id="zS:D" class="" style="width:174.5px">
+  800
+  </td></tr></tbody></table><div id="213d43ba-1f52-4e4c-bb09-d45c3b5f0b64" class="column-list"><div id="bd1f013c-a581-4d03-afda-5020786d5c4f" style="width:33.333333333333336%" class="column"><figure id="6576b6ec-888b-4dc1-aadd-8c9904aca95d" class="image"><a href="Reproducti%203af8e/Untitled%208.png"><img style="width:282px" src="Reproducti%203af8e/Untitled%208.png"/></a></figure></div><div id="0be8a621-a8d3-4578-ba31-968c2582f22d" style="width:33.333333333333336%" class="column"><figure id="a898ca9f-5e65-41d5-ad58-9e5ad59d7f99" class="image"><a href="Reproducti%203af8e/Untitled%209.png"><img style="width:282px" src="Reproducti%203af8e/Untitled%209.png"/></a></figure></div><div id="c1ef8339-cce2-4f21-aa88-bbe4c151eea0" style="width:33.33333333333333%" class="column"><figure id="67a67465-5e4b-431d-a4f1-bb2904aefee2" class="image"><a href="Reproducti%203af8e/Untitled%2010.png"><img style="width:280px" src="Reproducti%203af8e/Untitled%2010.png"/></a></figure></div></div><p id="55e610d8-fed6-46c5-b664-d1606fe72638" class="">Figures: <em>Result of privacy cost with different noise adding (grad_clip=4)</em></p><h3 id="dd74c1c4-b714-4fd3-b811-c84f216b5479" class="">Analysis</h3><p id="d9946831-4433-4107-ab5b-0ab104fd22fc" class="">From the accuracy results, we can see that adding noise has decreased the accuracy of the classifier. The larger the noise the smaller the accuracy and the better the privacy protection performance. These results are as expected and in line with the trend of that from original figure. We can also see that the overfitting has reduced, this can be a credit to the added noise and increased epochs. For Table4.3 and Figure4.3, it can be said that the larger the added noise, the faster it is to reach the required guarantee.</p><p id="5f70e794-e728-4a94-9160-6268c03c8403" class="">Clearly, there is still space for improvement. Our DP model takes more epochs to reach a same DP target and the accuracy is smaller than original. These discrepancies might be because of that our PCA layer so for is not a differential privacy PCA and the learning rate is fixed instead of linearly decaying. This would be investigated in the following experiment.</p><h2 id="2f66502d-6a01-4354-9d9d-4e8bb260369d" class="">Experiment 3: Adding Learning Rate Decay</h2><h3 id="c7356119-2483-43e7-a15a-e2e7d5dd760b" class="">Results</h3><p id="ec72cfc4-33f4-439a-9ff0-6829d3a0ef3b" class="">To further improve the performance of our reproduced network, we implemented linear learning rate decay as described in the paper. The corresponding results are as follows.</p><p id="0147ba09-7e23-4831-a46d-38d1e03c9687" class=""><em>Table: Accuracy of model with linear learning rate decay</em></p><table id="6e2fd53a-bf56-4c87-96e9-cc30d04dab43" class="simple-table"><thead class="simple-table-header"><tr id="cc15e878-605a-421d-9454-91452fe1a768"><th id="NFh`" class="simple-table-header-color simple-table-header">
+  Nosie_mul
+  </th><th id="ZgUY" class="simple-table-header-color simple-table-header">
+  8
+  </th><th id="r&gt;~B" class="simple-table-header-color simple-table-header">
+  4
+  </th><th id="k[HC" class="simple-table-header-color simple-table-header">
+  2
+  </th><th id="d&gt;AQ" class="simple-table-header-color simple-table-header">
+  NaN
+  </th></tr></thead><tbody><tr id="7cac7bdb-857f-4022-ac0d-2daf5542d3ab"><th id="NFh`" class="simple-table-header-color simple-table-header">
+  with lr decay
+  </th><td id="ZgUY" class="">
+  85.84% / 86.23%
+  </td><td id="r&gt;~B" class="">
+  89.31% / 89.31%
+  </td><td id="k[HC" class="">
+  92.31% / 91.80%
+  </td><td id="d&gt;AQ" class="">
+   
+  </td></tr><tr id="32c8ca35-24dd-4bdc-a1d5-6f9ea1811b04"><th id="NFh`" class="simple-table-header-color simple-table-header">
+  without lr decay
+  </th><td id="ZgUY" class="">
+  85.50% / 85.87%
+  </td><td id="r&gt;~B" class="">
+  89.13% / 89.03%
+  </td><td id="k[HC" class="">
+  92.22% / 91.53%
+  </td><td id="d&gt;AQ" class="">
+  99.94% / 98.00%
+  </td></tr><tr id="0e79cb6b-de1e-488b-ba67-7d5c65b8a8c7"><th id="NFh`" class="simple-table-header-color simple-table-header">
+  result from paper
+  </th><td id="ZgUY" class="">
+  90%
+  </td><td id="r&gt;~B" class="">
+  95%
+  </td><td id="k[HC" class="">
+  97%
+  </td><td id="d&gt;AQ" class="">
+   
+  </td></tr><tr id="36433111-ca4f-401c-9cf7-2b36846f6a06"><th id="NFh`" class="simple-table-header-color simple-table-header">
+  Achieve DP
+  </th><td id="ZgUY" class="">
+  (0.61 – 10-5) DP
+  </td><td id="r&gt;~B" class="">
+  (1.26 – 10-5) DP
+  </td><td id="k[HC" class="">
+  (2.73 – 10-5) DP
+  </td><td id="d&gt;AQ" class="">
+  NaN
+  </td></tr></tbody></table><p id="0072cb29-cc71-4e10-b9ec-5054fcc25068" class=""><em>Table: Epochs used for achieving DP targets (Learning rate decay)</em></p><table id="c64821ef-6ba9-40c3-9c85-edced96ce324" class="simple-table"><thead class="simple-table-header"><tr id="038e4cd2-9148-4925-bb1c-0ab49d324e74"><th id="u|sK" class="simple-table-header-color simple-table-header" style="width:174.5px">
+  Noise_mu
+  </th><th id="Rrey" class="simple-table-header-color simple-table-header" style="width:174.5px">
+  8
+  </th><th id="GCVT" class="simple-table-header-color simple-table-header" style="width:174.5px">
+  4
+  </th><th id="iMwH" class="simple-table-header-color simple-table-header" style="width:174.5px">
+  2
+  </th></tr></thead><tbody><tr id="a5f601f0-97de-4dde-85f6-d2ff3f96e6d2"><th id="u|sK" class="simple-table-header-color simple-table-header" style="width:174.5px">
+  DP Target
+  </th><td id="Rrey" class="" style="width:174.5px">
+  () DP
+  </td><td id="GCVT" class="" style="width:174.5px">
+  () DP
+  </td><td id="iMwH" class="" style="width:174.5px">
+  () DP
+  </td></tr><tr id="426df8d4-f0bb-435b-8444-7a80b25fbeee"><th id="u|sK" class="simple-table-header-color simple-table-header" style="width:174.5px">
+  Achieving
+  Epochs (paper)
+  </th><td id="Rrey" class="" style="width:174.5px">
+  16
+  </td><td id="GCVT" class="" style="width:174.5px">
+  130
+  </td><td id="iMwH" class="" style="width:174.5px">
+  760
+  </td></tr><tr id="44cf8a20-86e3-4d83-9216-33667f3bcb9d"><th id="u|sK" class="simple-table-header-color simple-table-header" style="width:174.5px">
+  Achieving
+  Epochs (ours)
+  </th><td id="Rrey" class="" style="width:174.5px">
+  70
+  </td><td id="GCVT" class="" style="width:174.5px">
+  250
+  </td><td id="iMwH" class="" style="width:174.5px">
+  800
+  </td></tr></tbody></table><div id="33e0f3e1-940c-4bb0-8ff3-5e05e5779f83" class="column-list"><div id="7e521f29-12d9-4939-8493-bca0bdc3c80a" style="width:33.333333333333336%" class="column"><figure id="696fb33c-c721-4e1d-8abf-508b167d5046" class="image"><a href="Reproducti%203af8e/Untitled%2011.png"><img style="width:287px" src="Reproducti%203af8e/Untitled%2011.png"/></a></figure></div><div id="c4fae2fb-e3e6-4d2a-b28d-d4ebb9b819ca" style="width:33.333333333333336%" class="column"><figure id="ca0ae6c7-6f28-48f1-ac15-76e130afc833" class="image"><a href="Reproducti%203af8e/Untitled%2012.png"><img style="width:293px" src="Reproducti%203af8e/Untitled%2012.png"/></a></figure></div><div id="b980fe91-4172-4e9d-99f6-08d821cad885" style="width:33.33333333333333%" class="column"><figure id="54972cd5-16e9-4d86-a02f-716165058463" class="image"><a href="Reproducti%203af8e/Untitled%2013.png"><img style="width:287px" src="Reproducti%203af8e/Untitled%2013.png"/></a></figure></div></div><p id="e98aaaf8-ed0e-42fe-b5e8-006aa767f8bd" class=""><em>Figures: Result of accuracy of Experiment 3 after learning rate decay</em></p><h3 id="106cf32c-4e3b-48c6-8bd4-8b21ddec87c9" class="">Analysis</h3><p id="9bdcd208-f302-440f-a0b5-706454bc73b9" class="">As is shown above, after adding the learning rate decay, the accuracy increased by approximately 0.5%, while there is no significant improvement regarding the DP target achieving speed. This indicates that decaying learning rate only has a very limited influence on the performance.</p><hr id="b0ea5ae8-e87f-4403-b5dc-d84af2060119"/><h2 id="dd5ef87b-216e-4df3-9aa5-559bfa7fa457" class="">Further Discussion</h2><p id="8213639a-2890-46e3-a6f0-cb98ce90ad52" class="">From the above experiment we can see that our DP-classifier is at least functional and our objective of reproduce figure3 of the paper is in general achieved. Due to the limited time of the course, we are not able to reach the same accuracy and speed for certain DP-target. Though the factors might contribute to these issues are discussed in the following section.</p><h3 id="74b4b5b4-09ce-4871-9dec-ea8cb8cf7b69" class="">DP-PCA layers</h3><p id="3146843c-e1ed-40a1-9879-494d96baac4a" class="">In the paper, a DP-PCA layer is used while in our reproduction only an ordinary PCA is implemented. This might be a significant influence on the accuracy, as discussed in the original paper and <a href="https://www.microsoft.com/en-us/research/wp-content/uploads/2014/06/PrivatePCA.pdf">other literatures</a>.</p><p id="48c171c1-15a2-4b1f-8cf8-33e603f57406" class="">At first, we did not think of adding noise to PCA layer as it’s against our intuition, how would noise in the data help improving accuracy? Also, in the paper it only mentioned a 2% increase by using PCA with no further indication on DP-PCA. However, as mentioned in the <a href="https://www.microsoft.com/en-us/research/wp-content/uploads/2014/06/PrivatePCA.pdf">literature</a>, privacy preserving PCA layer outperforms the ordinary non-private PCA algorithms. Attempt of implementing a DP-PCA has also been made but due to limited time it was not finished. Further work could use help of the library called <a href="https://github.com/IBM/differential-privacy-library"><code><em>diffprivlib</em></code></a><a href="https://github.com/IBM/differential-privacy-library"><em> </em></a>from IBM.</p><p id="631c9fe5-6688-4d0d-a33e-406ae7b6c59c" class="">Further discussion with our external supervisor Rob Romijnders, we think that the reason why DP-PCA might improve the accuracy could be similar to that in data augmentation process, where added noise serves as a regularization term. </p><h3 id="d8f4e20e-f1aa-497e-a3c4-0011152ce8d9" class="">Other factors to consider</h3><p id="640a8a2c-e3c9-4d4a-86b2-dd31cc8f6b98" class="">Apart from DP-PCA, there are several other possible reason for degraded accuracy performance. A possible explanation is regarding the sampling. While sampling, we took samples from one lot randomly every time, thus the possibility of taking the same samples exists. To inspect this, we could exempt already taken samples while sampling. Another possibility is the loss function, here <code>NLLLoss</code> was used, though it is considered the same as <code>CrossEntrophyLos</code>, influence of loss functions can still be inspected.</p><h1 id="d09ca23c-5c54-4f13-a9c6-28daaf6ad01c" class="">Conclusion</h1><p id="91bc4af8-b355-4bd1-b5f3-b65d2d688fa2" class="">In this reproduction project, we successfully implemented a DP-SGD algorithm and reached a training result of approximately 85-90% with different noise magnitudes, which are lower than that in the original paper. Potential reasons are discussed and the possibility of un-implemented DP-PCA layer were emphasized. Future work on this topic could be to implement such a layer and to inspect effects of different hyper-parameters such as gradient-clipping and learning rate, as well as test on other datasets such as CIFAR. Reproduction of privacy accountant could also be an option for further.</p><hr id="3d6ebae1-fa27-4c44-8c44-80df1292e915"/><h2 id="2b0fbea0-bf2d-412b-ae45-3b9eab150fdc" class="">Work Division</h2><p id="03bd451b-1cfc-471c-b29d-bcfbb62c39d9" class="">HengKai Zhang, 5XXXXXX, Training, Programming</p><p id="9023fe93-f809-4384-927b-8d89e2eceb0a" class="">Dong Shen, 5261139,  Training, Blog-writing</p><p id="9834629d-fa67-4b08-b4a9-82ad6cb3e66f" class="">Yuxin Chen, 5XXXXXX, Training, Blog-writing</p><h2 id="f7dae9e8-39d6-420e-8fdc-1b3cc1b746b8" class="">Acknowledgement</h2><p id="1e755ad8-379f-42d9-af2d-4967b7cd7013" class="">We are grateful to our external supervisor Rob Romijnders and teaching assistant Anish Sridharan from who we have received a lot of meaningful discussions and help.</p><p id="244f3e2a-5a1b-4a8d-a953-f02323206034" class="">
+</p><p id="e0387cfc-8f84-4305-9832-87f95da0dcdb" class="">
+</p><p id="1cd02a56-8ab1-43de-9d9b-1ceaf4891f45" class="">
+</p><p id="141b85e7-7fb0-4585-9e24-495a56c94461" class="">
+</p><p id="8dd3779f-04e5-40cf-bfaf-bd40f8b8f138" class="">
+</p></div></article></body></html>
